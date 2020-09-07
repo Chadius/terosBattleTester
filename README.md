@@ -1,0 +1,1 @@
+Creating a simplified simulation of my battle mechanics so I can fine tune and balance the mechanics before I go whole hog.
