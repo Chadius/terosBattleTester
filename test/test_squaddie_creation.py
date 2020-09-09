@@ -13,8 +13,8 @@ class SquaddieStats(TestCase):
             "aim": 1,
             "strength": 1,
             "magic": 2,
-            "armor": 1,
             "dodge": 1,
+            "armor": 1,
             "barrier": 1,
             "resist": 1,
         })
@@ -46,6 +46,7 @@ class SquaddieStats(TestCase):
 
         i_am_alive.takeExpectedDamage(108)
         self.assertEqual(i_am_alive.getExpectedCurrentHP(), 0)
+
 
 class AbilityCreation(TestCase):
     def testCreateAbility(self):
@@ -88,6 +89,7 @@ class AbilityCreation(TestCase):
         sword.setAttributes({**attributes_to_test, 'canCounterAttack': True })
         self.assertTrue(sword.canCounterAttack())
 
+
 class SquaddieUsesAbilityToAttack(TestCase):
     def setUp(self):
         self.teros = Squaddie()
@@ -97,8 +99,8 @@ class SquaddieUsesAbilityToAttack(TestCase):
             "aim": 1,
             "strength": 1,
             "magic": 2,
-            "armor": 1,
             "dodge": 1,
+            "armor": 1,
             "barrier": 1,
             "resist": 1,
         })
@@ -127,8 +129,8 @@ class SquaddieUsesAbilityToAttack(TestCase):
             "aim": 0,
             "strength": 1,
             "magic": 0,
-            "armor": 0,
             "dodge": 0,
+            "armor": 0,
             "barrier": 0,
             "resist": 0,
         })

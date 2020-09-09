@@ -8,8 +8,10 @@ class Squaddie(object):
         self.aim = 0
         self.strength = 0
         self.magic = 0
-        self.armor = 0
+
         self.dodge = 0
+        self.armor = 0
+
         self.barrier = 0
         self.resist = 0
 
@@ -24,8 +26,10 @@ class Squaddie(object):
         self.aim = statUpdates.get("aim", self.aim)
         self.strength = statUpdates.get("strength", self.strength)
         self.magic = statUpdates.get("magic", self.magic)
-        self.armor = statUpdates.get("armor", self.armor)
+
         self.dodge = statUpdates.get("dodge", self.dodge)
+        self.armor = statUpdates.get("armor", self.armor)
+
         self.barrier = statUpdates.get("barrier", self.barrier)
         self.resist = statUpdates.get("resist", self.resist)
 

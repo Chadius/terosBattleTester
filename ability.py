@@ -74,14 +74,21 @@ class Ability(object):
     def getTargets(self):
         return self.targets
 
+
 class AbilityType(Enum):
     UNKNOWN = 0
     SPELL = 1
+    WEAPON = 2
 
 
 class AbilitySpellType(Enum):
     UNKNOWN = 0
     ANCIENT = 1
+
+
+class AbilityWeaponType(Enum):
+    UNKNOWN = 0
+    AXE = 1
 
 
 class AbilityTarget(Enum):
