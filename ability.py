@@ -1,78 +1,5 @@
 from enum import Enum
-
-
-class Ability(object):
-    def __init__(self):
-        self.name = ""
-        self.level = 0
-        self.type = AbilityType.UNKNOWN
-        self.subtype = None
-        self.minRange = 0
-        self.maxRange = 0
-        self.splashRadius = 0
-        self.aim = 0
-        self.damage = 0
-        self.durability = 0
-        self.criticalHitNumber = None
-        self.targets = []
-        self.counterAttacksPossible = False
-
-    def setAttributes(self, attributeUpdates):
-        self.name = attributeUpdates.get("name", self.name)
-        self.level = attributeUpdates.get("level", self.level)
-        self.type = attributeUpdates.get("type", self.type)
-        self.subtype = attributeUpdates.get("subtype", self.subtype)
-        self.minRange = attributeUpdates.get("minRange", self.minRange)
-        self.maxRange = attributeUpdates.get("maxRange", self.maxRange)
-        self.splashRadius = attributeUpdates.get("splashRadius", self.splashRadius)
-        self.aim = attributeUpdates.get("aim", self.aim)
-        self.damage = attributeUpdates.get("damage", self.damage)
-        self.durability = attributeUpdates.get("durability", self.durability)
-        self.criticalHitNumber = attributeUpdates.get("criticalHitNumber", self.criticalHitNumber)
-        self.targets = attributeUpdates.get("targets", self.targets)
-        self.counterAttacksPossible = attributeUpdates.get("canCounterAttack", self.counterAttacksPossible)
-
-    def getName(self):
-        return self.name
-
-    def getLevel(self):
-        return self.level
-
-    def getType(self):
-        return self.type
-
-    def getSubtype(self):
-        return self.subtype
-
-    def getMinRange(self):
-        return self.minRange
-
-    def getMaxRange(self):
-        return self.maxRange
-
-    def getSplashRadius(self):
-        return self.splashRadius
-
-    def getAimBonus(self):
-        return self.aim
-
-    def getDamage(self):
-        return self.damage
-
-    def getMaxDurability(self):
-        return self.durability
-
-    def canDealCriticalHits(self):
-        return self.criticalHitNumber is not None
-
-    def canCounterAttack(self):
-        return self.counterAttacksPossible
-
-    def getCriticalHitNumber(self):
-        return self.criticalHitNumber
-
-    def getTargets(self):
-        return self.targets
+from typing import Union
 
 
 class AbilityType(Enum):
@@ -94,3 +21,78 @@ class AbilityWeaponType(Enum):
 class AbilityTarget(Enum):
     UNKNOWN = 0
     FOE = 1
+
+
+class Ability(object):
+    def __init__(self):
+        self.name = ""
+        self.level = 0
+        self.type = AbilityType.UNKNOWN
+        self.subtype = None
+        self.minRange = 0
+        self.maxRange = 0
+        self.splashRadius = 0
+        self.aim = 0
+        self.damage = 0
+        self.durability = 0
+        self.criticalHitNumber = None
+        self.targets = []
+        self.counterAttacksPossible = False
+
+    def setAttributes(self, attributeUpdates) -> None:
+        self.name = attributeUpdates.get("name", self.name)
+        self.level = attributeUpdates.get("level", self.level)
+        self.type = attributeUpdates.get("type", self.type)
+        self.subtype = attributeUpdates.get("subtype", self.subtype)
+        self.minRange = attributeUpdates.get("minRange", self.minRange)
+        self.maxRange = attributeUpdates.get("maxRange", self.maxRange)
+        self.splashRadius = attributeUpdates.get("splashRadius", self.splashRadius)
+        self.aim = attributeUpdates.get("aim", self.aim)
+        self.damage = attributeUpdates.get("damage", self.damage)
+        self.durability = attributeUpdates.get("durability", self.durability)
+        self.criticalHitNumber = attributeUpdates.get("criticalHitNumber", self.criticalHitNumber)
+        self.targets = attributeUpdates.get("targets", self.targets)
+        self.counterAttacksPossible = attributeUpdates.get("canCounterAttack", self.counterAttacksPossible)
+
+    def getName(self) -> str:
+        return self.name
+
+    def getLevel(self) -> int:
+        return self.level
+
+    def getType(self) -> AbilityType:
+        return self.type
+
+    def getSubtype(self) -> Union[AbilitySpellType, AbilityWeaponType]:
+        return self.subtype
+
+    def getMinRange(self) -> int:
+        return self.minRange
+
+    def getMaxRange(self) -> int:
+        return self.maxRange
+
+    def getSplashRadius(self) -> int:
+        return self.splashRadius
+
+    def getAimBonus(self) -> int:
+        return self.aim
+
+    def getDamage(self) -> int:
+        return self.damage
+
+    def getMaxDurability(self) -> int:
+        return self.durability
+
+    def canDealCriticalHits(self) -> bool:
+        return self.criticalHitNumber is not None
+
+    def canCounterAttack(self) -> bool:
+        return self.counterAttacksPossible
+
+    def getCriticalHitNumber(self) -> int:
+        return self.criticalHitNumber
+
+    def getTargets(self) -> str:
+        return self.targets
+

@@ -15,7 +15,7 @@ class SquaddieStats(TestCase):
             "magic": 2,
             "dodge": 1,
             "armor": 1,
-            "barrier": 1,
+            "deflect": 1,
             "resist": 1,
         })
         self.assertEqual(teros.getName(), "T'eros")
@@ -27,7 +27,7 @@ class SquaddieStats(TestCase):
         self.assertEqual(teros.getMagic(), 2)
         self.assertEqual(teros.getArmor(), 1)
         self.assertEqual(teros.getDodge(), 1)
-        self.assertEqual(teros.getBarrier(), 1)
+        self.assertEqual(teros.getDeflect(), 1)
         self.assertEqual(teros.getResist(), 1)
 
     def testSquaddieCanTakeExpectedDamage(self):
@@ -101,7 +101,7 @@ class SquaddieUsesAbilityToAttack(TestCase):
             "magic": 2,
             "dodge": 1,
             "armor": 1,
-            "barrier": 1,
+            "deflect": 1,
             "resist": 1,
         })
 
@@ -131,7 +131,7 @@ class SquaddieUsesAbilityToAttack(TestCase):
             "magic": 0,
             "dodge": 0,
             "armor": 0,
-            "barrier": 0,
+            "deflect": 0,
             "resist": 0,
         })
 
