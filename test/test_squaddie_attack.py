@@ -9,7 +9,7 @@ from squaddie import Squaddie
 class SquaddieAttackToReduceHitpoints(TestCase):
     def setUp(self):
         self.teros = Squaddie()
-        self.teros.setStats({
+        self.teros.set_stats({
             "name": "T'eros",
             "maxHP": 5,
             "aim": 1,
@@ -22,7 +22,7 @@ class SquaddieAttackToReduceHitpoints(TestCase):
         })
 
         self.blot_spell = Ability()
-        self.blot_spell.setAttributes({
+        self.blot_spell.set_attributes({
             "name": "blot",
             "level": 0,
             "type": AbilityType.SPELL,
@@ -39,7 +39,7 @@ class SquaddieAttackToReduceHitpoints(TestCase):
         })
 
         self.spear = Ability()
-        self.spear.setAttributes({
+        self.spear.set_attributes({
             "name": "spear",
             "level": 0,
             "type": AbilityType.WEAPON,
@@ -56,7 +56,7 @@ class SquaddieAttackToReduceHitpoints(TestCase):
         })
 
         self.bandit = Squaddie()
-        self.bandit.setStats({
+        self.bandit.set_stats({
             "name": "Bandit level 1",
             "maxHP": 3,
             "aim": 0,
@@ -78,7 +78,7 @@ class SquaddieAttackToReduceHitpoints(TestCase):
 
     def test_minimal_damage_is_zero(self):
         indestructible = Squaddie()
-        indestructible.setStats({
+        indestructible.set_stats({
             "name": "indestructible",
             "maxHP": 3,
             "dodge": 0,
@@ -97,7 +97,7 @@ class SquaddieAttackToReduceHitpoints(TestCase):
 class SquaddieCalculateChanceToHit(TestCase):
     def setUp(self):
         self.teros = Squaddie()
-        self.teros.setStats({
+        self.teros.set_stats({
             "name": "T'eros",
             "maxHP": 5,
             "aim": 1,
@@ -110,7 +110,7 @@ class SquaddieCalculateChanceToHit(TestCase):
         })
 
         self.blot_spell = Ability()
-        self.blot_spell.setAttributes({
+        self.blot_spell.set_attributes({
             "name": "blot",
             "level": 0,
             "type": AbilityType.SPELL,
@@ -127,7 +127,7 @@ class SquaddieCalculateChanceToHit(TestCase):
         })
 
         self.spear = Ability()
-        self.spear.setAttributes({
+        self.spear.set_attributes({
             "name": "spear",
             "level": 0,
             "type": AbilityType.WEAPON,
@@ -144,7 +144,7 @@ class SquaddieCalculateChanceToHit(TestCase):
         })
 
         self.necromancer = Squaddie()
-        self.necromancer.setStats({
+        self.necromancer.set_stats({
             "name": "Necromancer level 1",
             "maxHP": 3,
             "aim": 0,
@@ -164,11 +164,47 @@ class SquaddieCalculateChanceToHit(TestCase):
         chance_to_hit = SquaddieUseAbilityService.calculate_chance_hit(self.teros, self.spear, self.necromancer)
         self.assertEqual(chance_to_hit, 2)
 
+    def test_calculate_chance_to_dodge_with_advantage(self):
+        chance_to_hit = SquaddieUseAbilityService.calculate_chance_hit(
+            self.teros,
+            self.blot_spell,
+            self.necromancer,
+            {"hasAdvantage": True}
+        )
+        self.assertEqual(chance_to_hit, 2)
+
+    def test_calculate_chance_to_dodge_with_disadvantage(self):
+        chance_to_hit = SquaddieUseAbilityService.calculate_chance_hit(
+            self.teros,
+            self.blot_spell,
+            self.necromancer,
+            {"hasDisadvantage": True}
+        )
+        self.assertEqual(chance_to_hit, 0)
+
+    def test_calculate_chance_to_dodge_with_counter(self):
+        chance_to_hit = SquaddieUseAbilityService.calculate_chance_hit(
+            self.teros,
+            self.blot_spell,
+            self.necromancer,
+            {"isCounterAttack": True}
+        )
+        self.assertEqual(chance_to_hit, -1)
+
+    def test_calculate_chance_to_dodge_when_attack_too_close(self):
+        chance_to_hit = SquaddieUseAbilityService.calculate_chance_hit(
+            self.teros,
+            self.blot_spell,
+            self.necromancer,
+            {"tooClose": True}
+        )
+        self.assertEqual(chance_to_hit, 0)
+
 
 class CalculateExpectedDamage(TestCase):
     def setUp(self):
         self.teros = Squaddie()
-        self.teros.setStats({
+        self.teros.set_stats({
             "name": "T'eros",
             "maxHP": 5,
             "aim": 1,
@@ -181,7 +217,7 @@ class CalculateExpectedDamage(TestCase):
         })
 
         self.blot_spell = Ability()
-        self.blot_spell.setAttributes({
+        self.blot_spell.set_attributes({
             "name": "blot",
             "level": 0,
             "type": AbilityType.SPELL,
@@ -198,7 +234,7 @@ class CalculateExpectedDamage(TestCase):
         })
 
         self.spear = Ability()
-        self.spear.setAttributes({
+        self.spear.set_attributes({
             "name": "spear",
             "level": 0,
             "type": AbilityType.WEAPON,
@@ -215,7 +251,7 @@ class CalculateExpectedDamage(TestCase):
         })
 
         self.necromancer = Squaddie()
-        self.necromancer.setStats({
+        self.necromancer.set_stats({
             "name": "Necromancer level 1",
             "maxHP": 3,
             "aim": 0,
@@ -228,7 +264,7 @@ class CalculateExpectedDamage(TestCase):
         })
 
         self.bandit = Squaddie()
-        self.bandit.setStats({
+        self.bandit.set_stats({
             "name": "Bandit level 1",
             "maxHP": 3,
             "aim": 0,
@@ -241,15 +277,22 @@ class CalculateExpectedDamage(TestCase):
         })
 
     def test_calculate_expected_chance_to_hit(self):
-        expected_chance_to_hit_with_magic = SquaddieUseAbilityService.calculate_expected_chance_hit(self.teros, self.blot_spell, self.necromancer)
+        expected_chance_to_hit_with_magic = SquaddieUseAbilityService.calculate_expected_chance_hit(self.teros,
+                                                                                                    self.blot_spell,
+                                                                                                    self.necromancer)
         self.assertEqual(expected_chance_to_hit_with_magic, 26)
 
-        expected_chance_to_hit_with_physical = SquaddieUseAbilityService.calculate_expected_chance_hit(self.teros, self.spear, self.necromancer)
+        expected_chance_to_hit_with_physical = SquaddieUseAbilityService.calculate_expected_chance_hit(self.teros,
+                                                                                                       self.spear,
+                                                                                                       self.necromancer)
         self.assertEqual(expected_chance_to_hit_with_physical, 30)
 
     def test_calculate_expected_crit_damage(self):
-        expected_crit_damage_with_crit_possible = SquaddieUseAbilityService.calculate_expected_crit_damage(self.teros, self.spear, self.necromancer)
+        expected_crit_damage_with_crit_possible = SquaddieUseAbilityService.calculate_expected_crit_damage(self.teros,
+                                                                                                           self.spear,
+                                                                                                           self.necromancer)
         self.assertEqual(expected_crit_damage_with_crit_possible, 1 * 3)
 
-        expected_crit_damage_with_no_crit_possible = SquaddieUseAbilityService.calculate_expected_crit_damage(self.teros, self.blot_spell, self.bandit)
+        expected_crit_damage_with_no_crit_possible = SquaddieUseAbilityService.calculate_expected_crit_damage(
+            self.teros, self.blot_spell, self.bandit)
         self.assertEqual(expected_crit_damage_with_no_crit_possible, 0)

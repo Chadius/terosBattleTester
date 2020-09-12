@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Union
 
 from ability import Ability
 
@@ -21,8 +21,9 @@ class Squaddie(object):
         self.resist = 0
 
         self.abilities = []
+        self.equippedAbility = None
 
-    def setStats(self, statUpdates) -> None:
+    def set_stats(self, statUpdates) -> None:
         self.name = statUpdates.get("name", self.name)
         self.maxHP = statUpdates.get("maxHP", self.maxHP)
         self.expectedMaxHP = self.maxHP * 36
@@ -38,52 +39,59 @@ class Squaddie(object):
         self.deflect = statUpdates.get("deflect", self.deflect)
         self.resist = statUpdates.get("resist", self.resist)
 
-    def getMaxHP(self) -> int:
+    def get_max_hp(self) -> int:
         return self.maxHP
 
-    def getAim(self) -> int:
+    def get_aim(self) -> int:
         return self.aim
 
-    def getStrength(self) -> int:
+    def get_strength(self) -> int:
         return self.strength
 
-    def getMagic(self) -> int:
+    def get_magic(self) -> int:
         return self.magic
 
-    def getArmor(self) -> int:
+    def get_armor(self) -> int:
         return self.armor
 
-    def getDodge(self) -> int:
+    def get_dodge(self) -> int:
         return self.dodge
 
-    def getDeflect(self) -> int:
+    def get_deflect(self) -> int:
         return self.deflect
 
-    def getResist(self) -> int:
+    def get_resist(self) -> int:
         return self.resist
 
-    def getName(self) -> str:
+    def get_name(self) -> str:
         return self.name
 
-    def getExpectedMaxHP(self) -> int:
+    def get_expected_max_hp(self) -> int:
         return self.expectedMaxHP
 
-    def getExpectedCurrentHP(self) -> int:
+    def get_expected_current_hp(self) -> int:
         return self.expectedCurrentHP
 
-    def equipAbility(self, ability) -> None:
+    def add_ability(self, ability) -> None:
         self.abilities.append(ability)
 
-    def getAbilities(self) -> Sequence[Ability]:
+    def get_abilities(self) -> Sequence[Ability]:
         return self.abilities
 
-    def getAbilityNames(self) -> Sequence[str]:
-        return [ability.getName() for ability in self.abilities]
+    def get_ability_names(self) -> Sequence[str]:
+        return [ability.get_name() for ability in self.abilities]
 
-    def useAbility(self, ability, target) -> None:
-        target.takeExpectedDamage(ability.damage)
+    def use_ability(self, ability, target) -> None:
+        self.equip_ability(ability)
+        target.take_expected_damage(ability.damage)
 
-    def takeExpectedDamage(self, expectedDamageTaken) -> None:
+    def take_expected_damage(self, expectedDamageTaken) -> None:
         self.expectedCurrentHP -= expectedDamageTaken
         if self.expectedCurrentHP < 0:
             self.expectedCurrentHP = 0
+
+    def get_equipped_ability(self) -> Union[Ability, None]:
+        return self.equippedAbility
+
+    def equip_ability(self, ability) -> None:
+        self.equippedAbility = ability

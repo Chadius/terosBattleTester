@@ -7,7 +7,7 @@ from squaddie import Squaddie
 class SquaddieStats(TestCase):
     def testCreateSquaddie(self):
         teros = Squaddie()
-        teros.setStats({
+        teros.set_stats({
             "name": "T'eros",
             "maxHP": 5,
             "aim": 1,
@@ -18,34 +18,34 @@ class SquaddieStats(TestCase):
             "deflect": 1,
             "resist": 1,
         })
-        self.assertEqual(teros.getName(), "T'eros")
-        self.assertEqual(teros.getMaxHP(), 5)
-        self.assertEqual(teros.getExpectedMaxHP(), 180)
-        self.assertEqual(teros.getExpectedCurrentHP(), 180)
-        self.assertEqual(teros.getAim(), 1)
-        self.assertEqual(teros.getStrength(), 1)
-        self.assertEqual(teros.getMagic(), 2)
-        self.assertEqual(teros.getArmor(), 1)
-        self.assertEqual(teros.getDodge(), 1)
-        self.assertEqual(teros.getDeflect(), 1)
-        self.assertEqual(teros.getResist(), 1)
+        self.assertEqual(teros.get_name(), "T'eros")
+        self.assertEqual(teros.get_max_hp(), 5)
+        self.assertEqual(teros.get_expected_max_hp(), 180)
+        self.assertEqual(teros.get_expected_current_hp(), 180)
+        self.assertEqual(teros.get_aim(), 1)
+        self.assertEqual(teros.get_strength(), 1)
+        self.assertEqual(teros.get_magic(), 2)
+        self.assertEqual(teros.get_armor(), 1)
+        self.assertEqual(teros.get_dodge(), 1)
+        self.assertEqual(teros.get_deflect(), 1)
+        self.assertEqual(teros.get_resist(), 1)
 
     def testSquaddieCanTakeExpectedDamage(self):
         i_am_alive = Squaddie()
-        i_am_alive.setStats({
+        i_am_alive.set_stats({
             "name": "I am alive",
             "maxHP": 3,
         })
-        self.assertEqual(i_am_alive.getExpectedMaxHP(), 108)
-        self.assertEqual(i_am_alive.getExpectedCurrentHP(), 108)
+        self.assertEqual(i_am_alive.get_expected_max_hp(), 108)
+        self.assertEqual(i_am_alive.get_expected_current_hp(), 108)
 
-        i_am_alive.takeExpectedDamage(8)
+        i_am_alive.take_expected_damage(8)
 
-        self.assertEqual(i_am_alive.getExpectedMaxHP(), 108)
-        self.assertEqual(i_am_alive.getExpectedCurrentHP(), 100)
+        self.assertEqual(i_am_alive.get_expected_max_hp(), 108)
+        self.assertEqual(i_am_alive.get_expected_current_hp(), 100)
 
-        i_am_alive.takeExpectedDamage(108)
-        self.assertEqual(i_am_alive.getExpectedCurrentHP(), 0)
+        i_am_alive.take_expected_damage(108)
+        self.assertEqual(i_am_alive.get_expected_current_hp(), 0)
 
 
 class AbilityCreation(TestCase):
@@ -67,33 +67,33 @@ class AbilityCreation(TestCase):
         }
 
         blot_spell = Ability()
-        blot_spell.setAttributes(attributes_to_test)
+        blot_spell.set_attributes(attributes_to_test)
 
-        self.assertEqual(blot_spell.getName(), "blot")
-        self.assertEqual(blot_spell.getLevel(), 0)
-        self.assertEqual(blot_spell.getType(), AbilityType.SPELL)
-        self.assertEqual(blot_spell.getSubtype(), AbilitySpellType.ANCIENT)
-        self.assertEqual(blot_spell.getMinRange(), 1)
-        self.assertEqual(blot_spell.getMaxRange(), 2)
-        self.assertEqual(blot_spell.getSplashRadius(), None)
-        self.assertEqual(blot_spell.getAimBonus(), 1)
-        self.assertEqual(blot_spell.getDamage(), 1)
-        self.assertEqual(blot_spell.getMaxDurability(), 10)
-        self.assertEqual(blot_spell.canDealCriticalHits(), False)
-        self.assertEqual(blot_spell.canCounterAttack(), False)
-        self.assertEqual(blot_spell.getCriticalHitNumber(), None)
-        self.assertEqual(len(blot_spell.getTargets()), 1)
-        self.assertTrue(AbilityTarget.FOE in blot_spell.getTargets())
+        self.assertEqual(blot_spell.get_name(), "blot")
+        self.assertEqual(blot_spell.get_level(), 0)
+        self.assertEqual(blot_spell.get_type(), AbilityType.SPELL)
+        self.assertEqual(blot_spell.get_subtype(), AbilitySpellType.ANCIENT)
+        self.assertEqual(blot_spell.get_min_range(), 1)
+        self.assertEqual(blot_spell.get_max_range(), 2)
+        self.assertEqual(blot_spell.get_splash_radius(), None)
+        self.assertEqual(blot_spell.get_aim_bonus(), 1)
+        self.assertEqual(blot_spell.get_damage(), 1)
+        self.assertEqual(blot_spell.get_max_durability(), 10)
+        self.assertEqual(blot_spell.can_deal_critical_hits(), False)
+        self.assertEqual(blot_spell.can_counter_attack(), False)
+        self.assertEqual(blot_spell.get_critical_hit_number(), None)
+        self.assertEqual(len(blot_spell.get_targets()), 1)
+        self.assertTrue(AbilityTarget.FOE in blot_spell.get_targets())
 
         sword = Ability()
-        sword.setAttributes({**attributes_to_test, 'canCounterAttack': True })
-        self.assertTrue(sword.canCounterAttack())
+        sword.set_attributes({**attributes_to_test, 'canCounterAttack': True})
+        self.assertTrue(sword.can_counter_attack())
 
 
-class SquaddieUsesAbilityToAttack(TestCase):
+class SquaddieCanEquipAndUseAbility(TestCase):
     def setUp(self):
         self.teros = Squaddie()
-        self.teros.setStats({
+        self.teros.set_stats({
             "name": "T'eros",
             "maxHP": 5,
             "aim": 1,
@@ -106,7 +106,7 @@ class SquaddieUsesAbilityToAttack(TestCase):
         })
 
         self.blot_spell = Ability()
-        self.blot_spell.setAttributes({
+        self.blot_spell.set_attributes({
             "name": "blot",
             "level": 0,
             "type": AbilityType.SPELL,
@@ -123,7 +123,7 @@ class SquaddieUsesAbilityToAttack(TestCase):
         })
 
         self.bandit = Squaddie()
-        self.bandit.setStats({
+        self.bandit.set_stats({
             "name": "Bandit level 1",
             "maxHP": 3,
             "aim": 0,
@@ -135,15 +135,26 @@ class SquaddieUsesAbilityToAttack(TestCase):
             "resist": 0,
         })
 
-    def testSquaddieCanEquipAbility(self):
-        self.teros.equipAbility(self.blot_spell)
+    def testSquaddieCanAddAbility(self):
+        self.teros.add_ability(self.blot_spell)
 
-        self.assertEqual(len(self.teros.getAbilities()), 1)
-        self.assertTrue("blot" in self.teros.getAbilityNames())
+        self.assertEqual(len(self.teros.get_abilities()), 1)
+        self.assertTrue("blot" in self.teros.get_ability_names())
 
-        self.assertEqual(len(self.bandit.getAbilities()), 0)
+        self.assertEqual(len(self.bandit.get_abilities()), 0)
 
     def testSquaddieUsesAbilityToDealExpectedDamage(self):
-        self.teros.equipAbility(self.blot_spell)
-        self.teros.useAbility(self.blot_spell, self.bandit)
-        self.assertTrue(self.bandit.getExpectedCurrentHP() < self.bandit.getExpectedMaxHP())
+        self.teros.add_ability(self.blot_spell)
+        self.teros.use_ability(self.blot_spell, self.bandit)
+        self.assertTrue(self.bandit.get_expected_current_hp() < self.bandit.get_expected_max_hp())
+
+    def testSquaddieCanEquipAbility(self):
+        self.teros.add_ability(self.blot_spell)
+        self.teros.equip_ability(self.blot_spell)
+        self.assertEqual("blot", self.teros.get_equipped_ability().get_name())
+
+    def testSquaddieUsingAnAbilityEquipsIt(self):
+        self.teros.add_ability(self.blot_spell)
+        self.assertIsNone(self.teros.get_equipped_ability())
+        self.teros.use_ability(self.blot_spell, self.bandit)
+        self.assertEqual("blot", self.teros.get_equipped_ability().get_name())

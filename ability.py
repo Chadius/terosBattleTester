@@ -39,7 +39,7 @@ class Ability(object):
         self.targets = []
         self.counterAttacksPossible = False
 
-    def setAttributes(self, attributeUpdates) -> None:
+    def set_attributes(self, attributeUpdates) -> None:
         self.name = attributeUpdates.get("name", self.name)
         self.level = attributeUpdates.get("level", self.level)
         self.type = attributeUpdates.get("type", self.type)
@@ -54,45 +54,45 @@ class Ability(object):
         self.targets = attributeUpdates.get("targets", self.targets)
         self.counterAttacksPossible = attributeUpdates.get("canCounterAttack", self.counterAttacksPossible)
 
-    def getName(self) -> str:
+    def get_name(self) -> str:
         return self.name
 
-    def getLevel(self) -> int:
+    def get_level(self) -> int:
         return self.level
 
-    def getType(self) -> AbilityType:
+    def get_type(self) -> AbilityType:
         return self.type
 
-    def getSubtype(self) -> Union[AbilitySpellType, AbilityWeaponType]:
+    def get_subtype(self) -> Union[AbilitySpellType, AbilityWeaponType]:
         return self.subtype
 
-    def getMinRange(self) -> int:
+    def get_min_range(self) -> int:
         return self.minRange
 
-    def getMaxRange(self) -> int:
+    def get_max_range(self) -> int:
         return self.maxRange
 
-    def getSplashRadius(self) -> int:
+    def get_splash_radius(self) -> int:
         return self.splashRadius
 
-    def getAimBonus(self) -> int:
+    def get_aim_bonus(self) -> int:
         return self.aim
 
-    def getDamage(self) -> int:
+    def get_damage(self) -> int:
         return self.damage
 
-    def getMaxDurability(self) -> int:
+    def get_max_durability(self) -> int:
         return self.durability
 
-    def canDealCriticalHits(self) -> bool:
+    def can_deal_critical_hits(self) -> bool:
         return self.criticalHitNumber is not None
 
-    def canCounterAttack(self) -> bool:
+    def can_counter_attack(self) -> bool:
         return self.counterAttacksPossible
 
-    def getCriticalHitNumber(self) -> int:
+    def get_critical_hit_number(self) -> int:
         return self.criticalHitNumber
 
-    def getTargets(self) -> str:
+    def get_targets(self) -> str:
         return self.targets
 

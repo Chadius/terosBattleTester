@@ -6,14 +6,14 @@ class SquaddieUseAbilityService():
     @classmethod
     def calculate_damage_upon_hit(cls, attacker: Squaddie, ability: Ability, target: Squaddie) -> int:
 
-        if ability.getType() == AbilityType.SPELL:
-            attacker_total_damage = attacker.getMagic() + ability.getDamage()
-            target_damage_reduction = target.getResist()
-        elif ability.getType() == AbilityType.WEAPON:
-            attacker_total_damage = attacker.getStrength() + ability.getDamage()
-            target_damage_reduction = target.getArmor()
+        if ability.get_type() == AbilityType.SPELL:
+            attacker_total_damage = attacker.get_magic() + ability.get_damage()
+            target_damage_reduction = target.get_resist()
+        elif ability.get_type() == AbilityType.WEAPON:
+            attacker_total_damage = attacker.get_strength() + ability.get_damage()
+            target_damage_reduction = target.get_armor()
         else:
-            attacker_total_damage = ability.getDamage()
+            attacker_total_damage = ability.get_damage()
             target_damage_reduction = 0
 
         if attacker_total_damage - target_damage_reduction > 0:
@@ -21,18 +21,31 @@ class SquaddieUseAbilityService():
         return 0
 
     @classmethod
-    def calculate_chance_hit(cls, attacker: Squaddie, ability: Ability, target: Squaddie) -> int:
+    def calculate_chance_hit(cls, attacker: Squaddie, ability: Ability, target: Squaddie, modifiers = {}) -> int:
 
-        attacker_total_chance_to_hit = attacker.getAim() + ability.getAimBonus()
+        attacker_total_chance_to_hit = attacker.get_aim() + ability.get_aim_bonus()
 
-        if ability.getType() == AbilityType.SPELL:
-            target_total_dodge = target.getDeflect()
-        elif ability.getType() == AbilityType.WEAPON:
-            target_total_dodge = target.getDodge()
+        if ability.get_type() == AbilityType.SPELL:
+            target_total_dodge = target.get_deflect()
+        elif ability.get_type() == AbilityType.WEAPON:
+            target_total_dodge = target.get_dodge()
         else:
             target_total_dodge = 0
 
-        return attacker_total_chance_to_hit - target_total_dodge
+        chance_to_hit = attacker_total_chance_to_hit - target_total_dodge
+
+        if modifiers.get("hasAdvantage", False):
+            chance_to_hit += 1
+
+        if modifiers.get("hasDisadvantage", False):
+            chance_to_hit -= 1
+
+        if modifiers.get("isCounterAttack", False):
+            chance_to_hit += -2
+
+        if modifiers.get("tooClose", False):
+            chance_to_hit += -1
+        return chance_to_hit
 
     @classmethod
     def calculate_expected_chance_hit(cls, attacker: Squaddie, ability: Ability, target: Squaddie) -> int:
@@ -60,11 +73,11 @@ class SquaddieUseAbilityService():
 
     @classmethod
     def calculate_expected_crit_damage(cls, attacker: Squaddie, ability: Ability, target: Squaddie) -> int:
-        if not ability.canDealCriticalHits():
+        if not ability.can_deal_critical_hits():
             return 0
         
         raw_damage = SquaddieUseAbilityService.calculate_damage_upon_hit(attacker, ability, target)
-        crit_number = ability.getCriticalHitNumber()
+        crit_number = ability.get_critical_hit_number()
 
         crit_chance_out_of_36 = 0
         if crit_number < 2:
