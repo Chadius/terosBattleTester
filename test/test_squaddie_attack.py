@@ -241,5 +241,15 @@ class CalculateExpectedDamage(TestCase):
         })
 
     def test_calculate_expected_chance_to_hit(self):
-        expected_chance_to_hit = SquaddieUseAbilityService.calculate_expected_chance_hit(self.teros, self.blot_spell, self.necromancer)
-        self.assertEqual(expected_chance_to_hit, 26)
+        expected_chance_to_hit_with_magic = SquaddieUseAbilityService.calculate_expected_chance_hit(self.teros, self.blot_spell, self.necromancer)
+        self.assertEqual(expected_chance_to_hit_with_magic, 26)
+
+        expected_chance_to_hit_with_physical = SquaddieUseAbilityService.calculate_expected_chance_hit(self.teros, self.spear, self.necromancer)
+        self.assertEqual(expected_chance_to_hit_with_physical, 30)
+
+    def test_calculate_expected_crit_damage(self):
+        expected_crit_damage_with_crit_possible = SquaddieUseAbilityService.calculate_expected_crit_damage(self.teros, self.spear, self.necromancer)
+        self.assertEqual(expected_crit_damage_with_crit_possible, 1 * 3)
+
+        expected_crit_damage_with_no_crit_possible = SquaddieUseAbilityService.calculate_expected_crit_damage(self.teros, self.blot_spell, self.bandit)
+        self.assertEqual(expected_crit_damage_with_no_crit_possible, 0)

@@ -36,4 +36,52 @@ class SquaddieUseAbilityService():
 
     @classmethod
     def calculate_expected_chance_hit(cls, attacker: Squaddie, ability: Ability, target: Squaddie) -> int:
-        return 26
+        chance_to_hit = SquaddieUseAbilityService.calculate_chance_hit(attacker, ability, target)
+
+        if chance_to_hit < -5:
+            return 0
+        if chance_to_hit > 4:
+            return 36
+
+        expected_chance = {
+            4: 35,
+            3: 33,
+            2: 30,
+            1: 26,
+            0: 21,
+            -1: 15,
+            -2: 10,
+            -3: 6,
+            -4: 3,
+            -5: 1,
+        }
+        
+        return expected_chance[chance_to_hit]
+
+    @classmethod
+    def calculate_expected_crit_damage(cls, attacker: Squaddie, ability: Ability, target: Squaddie) -> int:
+        if not ability.canDealCriticalHits():
+            return 0
+        
+        raw_damage = SquaddieUseAbilityService.calculate_damage_upon_hit(attacker, ability, target)
+        crit_number = ability.getCriticalHitNumber()
+
+        crit_chance_out_of_36 = 0
+        if crit_number < 2:
+            crit_chance_out_of_36 = 0
+        if crit_number > 11:
+            crit_chance_out_of_36 = 36
+
+        expected_chance = {
+            11: 35,
+            10: 33,
+            9: 30,
+            8: 26,
+            7: 21,
+            6: 15,
+            5: 10,
+            4: 6,
+            3: 3,
+            2: 1,
+        }
+        return expected_chance[crit_number] * raw_damage
