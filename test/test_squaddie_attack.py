@@ -43,7 +43,7 @@ class SquaddieAttackToReduceHitpoints(TestCase):
             "name": "spear",
             "level": 0,
             "type": AbilityType.WEAPON,
-            "subtype": AbilityWeaponType.AXE,
+            "subtype": AbilityWeaponType.SPEAR,
             "minRange": 1,
             "maxRange": 2,
             "splashRadius": None,
@@ -131,7 +131,7 @@ class SquaddieCalculateChanceToHit(TestCase):
             "name": "spear",
             "level": 0,
             "type": AbilityType.WEAPON,
-            "subtype": AbilityWeaponType.AXE,
+            "subtype": AbilityWeaponType.SPEAR,
             "minRange": 1,
             "maxRange": 2,
             "splashRadius": None,
@@ -201,6 +201,133 @@ class SquaddieCalculateChanceToHit(TestCase):
         self.assertEqual(chance_to_hit, 0)
 
 
+class DetectAdvantageBasedOnEquippedWeapons(TestCase):
+    def setUp(self) -> None:
+        self.teros = Squaddie()
+        self.teros.set_stats({
+            "name": "T'eros",
+            "maxHP": 5,
+            "aim": 1,
+            "strength": 1,
+            "magic": 2,
+            "dodge": 1,
+            "armor": 1,
+            "deflect": 1,
+            "resist": 1,
+        })
+
+        self.blot_spell = Ability()
+        self.blot_spell.set_attributes({
+            "name": "blot",
+            "level": 0,
+            "type": AbilityType.SPELL,
+            "subtype": AbilitySpellType.ANCIENT,
+            "minRange": 1,
+            "maxRange": 2,
+            "splashRadius": None,
+            "aim": 1,
+            "damage": 1,
+            "durability": 10,
+            "canDealCriticalHits": False,
+            "criticalHitNumber": None,
+            "targets": [AbilityTarget.FOE]
+        })
+
+        self.spear = Ability()
+        self.spear.set_attributes({
+            "name": "spear",
+            "level": 0,
+            "type": AbilityType.WEAPON,
+            "subtype": AbilityWeaponType.SPEAR,
+            "minRange": 1,
+            "maxRange": 2,
+            "splashRadius": None,
+            "aim": 1,
+            "damage": 2,
+            "durability": 10,
+            "canDealCriticalHits": True,
+            "criticalHitNumber": 2,
+            "targets": [AbilityTarget.FOE]
+        })
+
+        self.bandit = Squaddie()
+        self.bandit.set_stats({
+            "name": "Bandit level 1",
+            "maxHP": 3,
+            "aim": 0,
+            "strength": 1,
+            "magic": 0,
+            "dodge": 0,
+            "armor": 1,
+            "deflect": 0,
+            "resist": 0,
+        })
+
+        self.sword = Ability()
+        self.sword.set_attributes({
+            "name": "sword",
+            "level": 0,
+            "type": AbilityType.WEAPON,
+            "subtype": AbilityWeaponType.SWORD,
+            "minRange": 1,
+            "maxRange": 2,
+            "splashRadius": None,
+            "aim": 1,
+            "damage": 2,
+            "durability": 10,
+            "canDealCriticalHits": True,
+            "criticalHitNumber": 2,
+            "targets": [AbilityTarget.FOE]
+        })
+
+        self.axe = Ability()
+        self.axe.set_attributes({
+            "name": "axe",
+            "level": 0,
+            "type": AbilityType.WEAPON,
+            "subtype": AbilityWeaponType.AXE,
+            "minRange": 1,
+            "maxRange": 2,
+            "splashRadius": None,
+            "aim": 1,
+            "damage": 2,
+            "durability": 10,
+            "canDealCriticalHits": True,
+            "criticalHitNumber": 2,
+            "targets": [AbilityTarget.FOE]
+        })
+
+    def test_no_advantage_or_disadvantage_for_different_types(self):
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.spear, self.blot_spell))
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.spear, self.blot_spell))
+
+    def test_advantage_with_weapons(self):
+        self.assertTrue(SquaddieUseAbilityService.has_advantage_due_to_ability(self.spear, self.sword))
+        self.assertTrue(SquaddieUseAbilityService.has_advantage_due_to_ability(self.sword, self.axe))
+        self.assertTrue(SquaddieUseAbilityService.has_advantage_due_to_ability(self.axe, self.spear))
+
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.spear, self.axe))
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.sword, self.spear))
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.axe, self.sword))
+
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.spear, self.spear))
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.sword, self.sword))
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.axe, self.axe))
+
+    def test_disadvantage_with_weapons(self):
+        self.assertTrue(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.spear, self.axe))
+        self.assertTrue(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.sword, self.spear))
+        self.assertTrue(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.axe, self.sword))
+
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.spear, self.sword))
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.sword, self.axe))
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.axe, self.spear))
+
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.spear, self.spear))
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.sword, self.sword))
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.axe, self.axe))
+
+
 class CalculateExpectedDamage(TestCase):
     def setUp(self):
         self.teros = Squaddie()
@@ -238,7 +365,7 @@ class CalculateExpectedDamage(TestCase):
             "name": "spear",
             "level": 0,
             "type": AbilityType.WEAPON,
-            "subtype": AbilityWeaponType.AXE,
+            "subtype": AbilityWeaponType.SPEAR,
             "minRange": 1,
             "maxRange": 2,
             "splashRadius": None,

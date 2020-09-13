@@ -11,11 +11,15 @@ class AbilityType(Enum):
 class AbilitySpellType(Enum):
     UNKNOWN = 0
     ANCIENT = 1
+    DJINN = 2
+    DIVINE = 3
 
 
 class AbilityWeaponType(Enum):
     UNKNOWN = 0
     AXE = 1
+    SWORD = 2
+    SPEAR = 3
 
 
 class AbilityTarget(Enum):

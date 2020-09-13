@@ -1,4 +1,4 @@
-from ability import AbilityType, Ability
+from ability import AbilityType, Ability, AbilityWeaponType
 from squaddie import Squaddie
 
 
@@ -21,7 +21,7 @@ class SquaddieUseAbilityService():
         return 0
 
     @classmethod
-    def calculate_chance_hit(cls, attacker: Squaddie, ability: Ability, target: Squaddie, modifiers = {}) -> int:
+    def calculate_chance_hit(cls, attacker: Squaddie, ability: Ability, target: Squaddie, modifiers={}) -> int:
 
         attacker_total_chance_to_hit = attacker.get_aim() + ability.get_aim_bonus()
 
@@ -68,22 +68,21 @@ class SquaddieUseAbilityService():
             -4: 3,
             -5: 1,
         }
-        
+
         return expected_chance[chance_to_hit]
 
     @classmethod
     def calculate_expected_crit_damage(cls, attacker: Squaddie, ability: Ability, target: Squaddie) -> int:
         if not ability.can_deal_critical_hits():
             return 0
-        
+
         raw_damage = SquaddieUseAbilityService.calculate_damage_upon_hit(attacker, ability, target)
         crit_number = ability.get_critical_hit_number()
 
-        crit_chance_out_of_36 = 0
         if crit_number < 2:
-            crit_chance_out_of_36 = 0
+            return 0
         if crit_number > 11:
-            crit_chance_out_of_36 = 36
+            return 36
 
         expected_chance = {
             11: 35,
@@ -98,3 +97,45 @@ class SquaddieUseAbilityService():
             2: 1,
         }
         return expected_chance[crit_number] * raw_damage
+
+    @classmethod
+    def has_advantage_due_to_ability(cls, attack_ability: Ability, defense_ability: Ability) -> bool:
+        advantage_chart = {
+            AbilityType.WEAPON: {
+                AbilityWeaponType.SWORD: AbilityWeaponType.AXE,
+                AbilityWeaponType.SPEAR: AbilityWeaponType.SWORD,
+                AbilityWeaponType.AXE: AbilityWeaponType.SPEAR,
+            }
+        }
+
+        return cls.__does_ability_type_exist_in_chart(attack_ability, defense_ability, advantage_chart)
+
+    @classmethod
+    def has_disadvantage_due_to_ability(cls, attack_ability: Ability, defense_ability: Ability) -> bool:
+        disadvantage_chart = {
+            AbilityType.WEAPON: {
+                AbilityWeaponType.SWORD: AbilityWeaponType.SPEAR,
+                AbilityWeaponType.SPEAR: AbilityWeaponType.AXE,
+                AbilityWeaponType.AXE: AbilityWeaponType.SWORD
+            }
+        }
+
+        return cls.__does_ability_type_exist_in_chart(attack_ability, defense_ability, disadvantage_chart)
+
+    @classmethod
+    def __does_ability_type_exist_in_chart(cls, attack_ability: Ability, defense_ability: Ability, chart) -> bool:
+        ability_type = attack_ability.get_type()
+        defense_ability_type = attack_ability.get_type()
+        attack_subtype = attack_ability.get_subtype()
+        defense_subtype = defense_ability.get_subtype()
+
+        if ability_type != defense_ability_type:
+            return False
+
+        if ability_type not in chart:
+            return False
+
+        if attack_subtype not in chart[ability_type]:
+            return False
+
+        return chart[ability_type][attack_subtype] == defense_subtype
