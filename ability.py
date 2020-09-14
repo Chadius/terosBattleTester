@@ -20,7 +20,7 @@ class AbilityWeaponType(Enum):
     AXE = 1
     SWORD = 2
     SPEAR = 3
-
+    BOW = 4
 
 class AbilityTarget(Enum):
     UNKNOWN = 0

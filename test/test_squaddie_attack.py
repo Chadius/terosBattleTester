@@ -6,10 +6,11 @@ from ability import Ability, AbilityType, AbilitySpellType, AbilityTarget, Abili
 from squaddie import Squaddie
 
 
-class SquaddieAttackToReduceHitpoints(TestCase):
-    def setUp(self):
-        self.teros = Squaddie()
-        self.teros.set_stats({
+class SquaddieFactory:
+    @classmethod
+    def create_teros(cls):
+        teros = Squaddie()
+        teros.set_stats({
             "name": "T'eros",
             "maxHP": 5,
             "aim": 1,
@@ -20,9 +21,46 @@ class SquaddieAttackToReduceHitpoints(TestCase):
             "deflect": 1,
             "resist": 1,
         })
+        return teros
 
-        self.blot_spell = Ability()
-        self.blot_spell.set_attributes({
+    @classmethod
+    def create_necromancer(cls):
+        necromancer = Squaddie()
+        necromancer.set_stats({
+            "name": "Necromancer level 1",
+            "maxHP": 3,
+            "aim": 0,
+            "strength": 1,
+            "magic": 0,
+            "dodge": 0,
+            "armor": 0,
+            "deflect": 1,
+            "resist": 0,
+        })
+        return necromancer
+
+    @classmethod
+    def create_bandit(cls):
+        bandit = Squaddie()
+        bandit.set_stats({
+            "name": "Bandit level 1",
+            "maxHP": 3,
+            "aim": 0,
+            "strength": 1,
+            "magic": 0,
+            "dodge": 0,
+            "armor": 1,
+            "deflect": 0,
+            "resist": 0,
+        })
+        return bandit
+
+
+class AbilityFactory:
+    @classmethod
+    def create_blot_spell(cls):
+        blot_spell = Ability()
+        blot_spell.set_attributes({
             "name": "blot",
             "level": 0,
             "type": AbilityType.SPELL,
@@ -37,9 +75,12 @@ class SquaddieAttackToReduceHitpoints(TestCase):
             "criticalHitNumber": None,
             "targets": [AbilityTarget.FOE]
         })
+        return blot_spell
 
-        self.spear = Ability()
-        self.spear.set_attributes({
+    @classmethod
+    def create_spear(cls):
+        spear = Ability()
+        spear.set_attributes({
             "name": "spear",
             "level": 0,
             "type": AbilityType.WEAPON,
@@ -54,19 +95,75 @@ class SquaddieAttackToReduceHitpoints(TestCase):
             "criticalHitNumber": 2,
             "targets": [AbilityTarget.FOE]
         })
+        return spear
 
-        self.bandit = Squaddie()
-        self.bandit.set_stats({
-            "name": "Bandit level 1",
-            "maxHP": 3,
-            "aim": 0,
-            "strength": 1,
-            "magic": 0,
-            "dodge": 0,
-            "armor": 1,
-            "deflect": 0,
-            "resist": 0,
-        })
+    @classmethod
+    def create_sword(cls):
+        sword = Ability()
+        sword.set_attributes({
+        "name": "sword",
+        "level": 0,
+        "type": AbilityType.WEAPON,
+        "subtype": AbilityWeaponType.SWORD,
+        "minRange": 1,
+        "maxRange": 2,
+        "splashRadius": None,
+        "aim": 1,
+        "damage": 2,
+        "durability": 10,
+        "canDealCriticalHits": True,
+        "criticalHitNumber": 2,
+        "targets": [AbilityTarget.FOE]
+    })
+        return sword
+
+    @classmethod
+    def create_axe(cls):
+        axe = Ability()
+        axe.set_attributes({
+        "name": "axe",
+        "level": 0,
+        "type": AbilityType.WEAPON,
+        "subtype": AbilityWeaponType.AXE,
+        "minRange": 1,
+        "maxRange": 2,
+        "splashRadius": None,
+        "aim": 1,
+        "damage": 2,
+        "durability": 10,
+        "canDealCriticalHits": True,
+        "criticalHitNumber": 2,
+        "targets": [AbilityTarget.FOE]
+    })
+        return axe
+
+    @classmethod
+    def create_bow(cls):
+        bow = Ability()
+        bow.set_attributes({
+        "name": "bow",
+        "level": 0,
+        "type": AbilityType.WEAPON,
+        "subtype": AbilityWeaponType.BOW,
+        "minRange": 1,
+        "maxRange": 3,
+        "splashRadius": None,
+        "aim": 1,
+        "damage": 2,
+        "durability": 10,
+        "canDealCriticalHits": True,
+        "criticalHitNumber": 2,
+        "targets": [AbilityTarget.FOE]
+    })
+        return bow
+
+
+class SquaddieAttackToReduceHitpoints(TestCase):
+    def setUp(self):
+        self.teros = SquaddieFactory.create_teros()
+        self.blot_spell = AbilityFactory.create_blot_spell()
+        self.spear = AbilityFactory.create_spear()
+        self.bandit = SquaddieFactory.create_bandit()
 
     def test_calculate_damage_upon_hit(self):
         damage = SquaddieUseAbilityService.calculate_damage_upon_hit(self.teros, self.blot_spell, self.bandit)
@@ -96,65 +193,10 @@ class SquaddieAttackToReduceHitpoints(TestCase):
 
 class SquaddieCalculateChanceToHit(TestCase):
     def setUp(self):
-        self.teros = Squaddie()
-        self.teros.set_stats({
-            "name": "T'eros",
-            "maxHP": 5,
-            "aim": 1,
-            "strength": 1,
-            "magic": 2,
-            "dodge": 1,
-            "armor": 1,
-            "deflect": 1,
-            "resist": 1,
-        })
-
-        self.blot_spell = Ability()
-        self.blot_spell.set_attributes({
-            "name": "blot",
-            "level": 0,
-            "type": AbilityType.SPELL,
-            "subtype": AbilitySpellType.ANCIENT,
-            "minRange": 1,
-            "maxRange": 2,
-            "splashRadius": None,
-            "aim": 1,
-            "damage": 1,
-            "durability": 10,
-            "canDealCriticalHits": False,
-            "criticalHitNumber": None,
-            "targets": [AbilityTarget.FOE]
-        })
-
-        self.spear = Ability()
-        self.spear.set_attributes({
-            "name": "spear",
-            "level": 0,
-            "type": AbilityType.WEAPON,
-            "subtype": AbilityWeaponType.SPEAR,
-            "minRange": 1,
-            "maxRange": 2,
-            "splashRadius": None,
-            "aim": 1,
-            "damage": 2,
-            "durability": 10,
-            "canDealCriticalHits": True,
-            "criticalHitNumber": 2,
-            "targets": [AbilityTarget.FOE]
-        })
-
-        self.necromancer = Squaddie()
-        self.necromancer.set_stats({
-            "name": "Necromancer level 1",
-            "maxHP": 3,
-            "aim": 0,
-            "strength": 1,
-            "magic": 0,
-            "dodge": 0,
-            "armor": 0,
-            "deflect": 1,
-            "resist": 0,
-        })
+        self.teros = SquaddieFactory.create_teros()
+        self.blot_spell = AbilityFactory.create_blot_spell()
+        self.spear = AbilityFactory.create_spear()
+        self.necromancer = SquaddieFactory.create_necromancer()
 
     def test_calculate_chance_to_dodge(self):
         chance_to_hit = SquaddieUseAbilityService.calculate_chance_hit(self.teros, self.blot_spell, self.necromancer)
@@ -203,99 +245,13 @@ class SquaddieCalculateChanceToHit(TestCase):
 
 class DetectAdvantageBasedOnEquippedWeapons(TestCase):
     def setUp(self) -> None:
-        self.teros = Squaddie()
-        self.teros.set_stats({
-            "name": "T'eros",
-            "maxHP": 5,
-            "aim": 1,
-            "strength": 1,
-            "magic": 2,
-            "dodge": 1,
-            "armor": 1,
-            "deflect": 1,
-            "resist": 1,
-        })
-
-        self.blot_spell = Ability()
-        self.blot_spell.set_attributes({
-            "name": "blot",
-            "level": 0,
-            "type": AbilityType.SPELL,
-            "subtype": AbilitySpellType.ANCIENT,
-            "minRange": 1,
-            "maxRange": 2,
-            "splashRadius": None,
-            "aim": 1,
-            "damage": 1,
-            "durability": 10,
-            "canDealCriticalHits": False,
-            "criticalHitNumber": None,
-            "targets": [AbilityTarget.FOE]
-        })
-
-        self.spear = Ability()
-        self.spear.set_attributes({
-            "name": "spear",
-            "level": 0,
-            "type": AbilityType.WEAPON,
-            "subtype": AbilityWeaponType.SPEAR,
-            "minRange": 1,
-            "maxRange": 2,
-            "splashRadius": None,
-            "aim": 1,
-            "damage": 2,
-            "durability": 10,
-            "canDealCriticalHits": True,
-            "criticalHitNumber": 2,
-            "targets": [AbilityTarget.FOE]
-        })
-
-        self.bandit = Squaddie()
-        self.bandit.set_stats({
-            "name": "Bandit level 1",
-            "maxHP": 3,
-            "aim": 0,
-            "strength": 1,
-            "magic": 0,
-            "dodge": 0,
-            "armor": 1,
-            "deflect": 0,
-            "resist": 0,
-        })
-
-        self.sword = Ability()
-        self.sword.set_attributes({
-            "name": "sword",
-            "level": 0,
-            "type": AbilityType.WEAPON,
-            "subtype": AbilityWeaponType.SWORD,
-            "minRange": 1,
-            "maxRange": 2,
-            "splashRadius": None,
-            "aim": 1,
-            "damage": 2,
-            "durability": 10,
-            "canDealCriticalHits": True,
-            "criticalHitNumber": 2,
-            "targets": [AbilityTarget.FOE]
-        })
-
-        self.axe = Ability()
-        self.axe.set_attributes({
-            "name": "axe",
-            "level": 0,
-            "type": AbilityType.WEAPON,
-            "subtype": AbilityWeaponType.AXE,
-            "minRange": 1,
-            "maxRange": 2,
-            "splashRadius": None,
-            "aim": 1,
-            "damage": 2,
-            "durability": 10,
-            "canDealCriticalHits": True,
-            "criticalHitNumber": 2,
-            "targets": [AbilityTarget.FOE]
-        })
+        self.teros = SquaddieFactory.create_teros()
+        self.bandit = SquaddieFactory.create_bandit()
+        self.blot_spell = AbilityFactory.create_blot_spell()
+        self.spear = AbilityFactory.create_spear()
+        self.sword = AbilityFactory.create_sword()
+        self.axe = AbilityFactory.create_axe()
+        self.bow = AbilityFactory.create_bow()
 
     def test_no_advantage_or_disadvantage_for_different_types(self):
         self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.spear, self.blot_spell))
@@ -327,21 +283,33 @@ class DetectAdvantageBasedOnEquippedWeapons(TestCase):
         self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.sword, self.sword))
         self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.axe, self.axe))
 
+    def test_bows_are_neutral_to_weapons(self):
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.bow, self.spear))
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.bow, self.sword))
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.bow, self.axe))
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.bow, self.bow))
+
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.bow, self.spear))
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.bow, self.sword))
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.bow, self.axe))
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.bow, self.bow))
+
+    def test_bows_have_advantage_if_initiating(self):
+        self.assertTrue(SquaddieUseAbilityService.has_advantage_due_to_initating(self.bow))
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_initating(self.blot_spell))
+
+    def test_bows_have_disadvantage_if_countering(self):
+        self.assertTrue(SquaddieUseAbilityService.has_disadvantage_due_to_countering(self.bow))
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_countering(self.blot_spell))
+
+    def test_bows_take_penalty_for_firing_up_close(self):
+        self.assertTrue(SquaddieUseAbilityService.has_point_blank_penalty(self.bow))
+        self.assertFalse(SquaddieUseAbilityService.has_point_blank_penalty(self.blot_spell))
+
 
 class CalculateExpectedDamage(TestCase):
     def setUp(self):
-        self.teros = Squaddie()
-        self.teros.set_stats({
-            "name": "T'eros",
-            "maxHP": 5,
-            "aim": 1,
-            "strength": 1,
-            "magic": 2,
-            "dodge": 1,
-            "armor": 1,
-            "deflect": 1,
-            "resist": 1,
-        })
+        self.teros = SquaddieFactory.create_teros()
 
         self.blot_spell = Ability()
         self.blot_spell.set_attributes({
@@ -377,31 +345,9 @@ class CalculateExpectedDamage(TestCase):
             "targets": [AbilityTarget.FOE]
         })
 
-        self.necromancer = Squaddie()
-        self.necromancer.set_stats({
-            "name": "Necromancer level 1",
-            "maxHP": 3,
-            "aim": 0,
-            "strength": 1,
-            "magic": 0,
-            "dodge": 0,
-            "armor": 0,
-            "deflect": 1,
-            "resist": 0,
-        })
+        self.necromancer = SquaddieFactory.create_necromancer()
 
-        self.bandit = Squaddie()
-        self.bandit.set_stats({
-            "name": "Bandit level 1",
-            "maxHP": 3,
-            "aim": 0,
-            "strength": 1,
-            "magic": 0,
-            "dodge": 0,
-            "armor": 1,
-            "deflect": 0,
-            "resist": 0,
-        })
+        self.bandit = SquaddieFactory.create_bandit()
 
     def test_calculate_expected_chance_to_hit(self):
         expected_chance_to_hit_with_magic = SquaddieUseAbilityService.calculate_expected_chance_hit(self.teros,

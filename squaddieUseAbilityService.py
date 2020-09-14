@@ -139,3 +139,21 @@ class SquaddieUseAbilityService():
             return False
 
         return chart[ability_type][attack_subtype] == defense_subtype
+
+    @classmethod
+    def has_advantage_due_to_initating(cls, ability):
+        if ability.get_type() == AbilityType.WEAPON and ability.get_subtype() == AbilityWeaponType.BOW:
+            return True
+        return False
+
+    @classmethod
+    def has_disadvantage_due_to_countering(cls, ability):
+        if ability.get_type() == AbilityType.WEAPON and ability.get_subtype() == AbilityWeaponType.BOW:
+            return True
+        return False
+
+    @classmethod
+    def has_point_blank_penalty(cls, ability):
+        if ability.get_type() == AbilityType.WEAPON and ability.get_subtype() == AbilityWeaponType.BOW:
+            return True
+        return False
