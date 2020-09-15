@@ -101,60 +101,60 @@ class AbilityFactory:
     def create_sword(cls):
         sword = Ability()
         sword.set_attributes({
-        "name": "sword",
-        "level": 0,
-        "type": AbilityType.WEAPON,
-        "subtype": AbilityWeaponType.SWORD,
-        "minRange": 1,
-        "maxRange": 2,
-        "splashRadius": None,
-        "aim": 1,
-        "damage": 2,
-        "durability": 10,
-        "canDealCriticalHits": True,
-        "criticalHitNumber": 2,
-        "targets": [AbilityTarget.FOE]
-    })
+            "name": "sword",
+            "level": 0,
+            "type": AbilityType.WEAPON,
+            "subtype": AbilityWeaponType.SWORD,
+            "minRange": 1,
+            "maxRange": 2,
+            "splashRadius": None,
+            "aim": 1,
+            "damage": 2,
+            "durability": 10,
+            "canDealCriticalHits": True,
+            "criticalHitNumber": 2,
+            "targets": [AbilityTarget.FOE]
+        })
         return sword
 
     @classmethod
     def create_axe(cls):
         axe = Ability()
         axe.set_attributes({
-        "name": "axe",
-        "level": 0,
-        "type": AbilityType.WEAPON,
-        "subtype": AbilityWeaponType.AXE,
-        "minRange": 1,
-        "maxRange": 2,
-        "splashRadius": None,
-        "aim": 1,
-        "damage": 2,
-        "durability": 10,
-        "canDealCriticalHits": True,
-        "criticalHitNumber": 2,
-        "targets": [AbilityTarget.FOE]
-    })
+            "name": "axe",
+            "level": 0,
+            "type": AbilityType.WEAPON,
+            "subtype": AbilityWeaponType.AXE,
+            "minRange": 1,
+            "maxRange": 2,
+            "splashRadius": None,
+            "aim": 1,
+            "damage": 2,
+            "durability": 10,
+            "canDealCriticalHits": True,
+            "criticalHitNumber": 2,
+            "targets": [AbilityTarget.FOE]
+        })
         return axe
 
     @classmethod
     def create_bow(cls):
         bow = Ability()
         bow.set_attributes({
-        "name": "bow",
-        "level": 0,
-        "type": AbilityType.WEAPON,
-        "subtype": AbilityWeaponType.BOW,
-        "minRange": 1,
-        "maxRange": 3,
-        "splashRadius": None,
-        "aim": 1,
-        "damage": 2,
-        "durability": 10,
-        "canDealCriticalHits": True,
-        "criticalHitNumber": 2,
-        "targets": [AbilityTarget.FOE]
-    })
+            "name": "bow",
+            "level": 0,
+            "type": AbilityType.WEAPON,
+            "subtype": AbilityWeaponType.BOW,
+            "minRange": 1,
+            "maxRange": 3,
+            "splashRadius": None,
+            "aim": 1,
+            "damage": 2,
+            "durability": 10,
+            "canDealCriticalHits": True,
+            "criticalHitNumber": 2,
+            "targets": [AbilityTarget.FOE]
+        })
         return bow
 
 
@@ -283,6 +283,10 @@ class DetectAdvantageBasedOnEquippedWeapons(TestCase):
         self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.sword, self.sword))
         self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.axe, self.axe))
 
+    def test_neutral_if_defender_is_unequipped(self):
+        self.assertFalse(SquaddieUseAbilityService.has_advantage_due_to_ability(self.spear, None))
+        self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.spear, None))
+
     def test_bows_are_neutral_to_weapons(self):
         self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.bow, self.spear))
         self.assertFalse(SquaddieUseAbilityService.has_disadvantage_due_to_ability(self.bow, self.sword))
@@ -311,39 +315,11 @@ class CalculateExpectedDamage(TestCase):
     def setUp(self):
         self.teros = SquaddieFactory.create_teros()
 
-        self.blot_spell = Ability()
-        self.blot_spell.set_attributes({
-            "name": "blot",
-            "level": 0,
-            "type": AbilityType.SPELL,
-            "subtype": AbilitySpellType.ANCIENT,
-            "minRange": 1,
-            "maxRange": 2,
-            "splashRadius": None,
-            "aim": 1,
-            "damage": 1,
-            "durability": 10,
-            "canDealCriticalHits": False,
-            "criticalHitNumber": None,
-            "targets": [AbilityTarget.FOE]
-        })
-
-        self.spear = Ability()
-        self.spear.set_attributes({
-            "name": "spear",
-            "level": 0,
-            "type": AbilityType.WEAPON,
-            "subtype": AbilityWeaponType.SPEAR,
-            "minRange": 1,
-            "maxRange": 2,
-            "splashRadius": None,
-            "aim": 1,
-            "damage": 2,
-            "durability": 10,
-            "canDealCriticalHits": True,
-            "criticalHitNumber": 2,
-            "targets": [AbilityTarget.FOE]
-        })
+        self.blot_spell = AbilityFactory.create_blot_spell()
+        self.spear = AbilityFactory.create_spear()
+        self.sword = AbilityFactory.create_sword()
+        self.axe = AbilityFactory.create_axe()
+        self.bow = AbilityFactory.create_bow()
 
         self.necromancer = SquaddieFactory.create_necromancer()
 
@@ -369,3 +345,50 @@ class CalculateExpectedDamage(TestCase):
         expected_crit_damage_with_no_crit_possible = SquaddieUseAbilityService.calculate_expected_crit_damage(
             self.teros, self.blot_spell, self.bandit)
         self.assertEqual(expected_crit_damage_with_no_crit_possible, 0)
+
+    def test_calculate_expected_damage_inflated_compared_to_normal_hit_points(self):
+        expected_damage = SquaddieUseAbilityService.calculate_expected_damage(self.teros, self.blot_spell, self.bandit)
+        self.assertEqual(expected_damage, 90)
+
+    def test_weapon_advantage_increases_expected_damage(self):
+        self.teros.add_ability(self.sword)
+        self.teros.equip_ability(self.sword)
+
+        self.bandit.add_ability(self.axe)
+        self.bandit.equip_ability(self.axe)
+
+        expected_damage = SquaddieUseAbilityService.calculate_expected_damage(self.teros, self.sword, self.bandit)
+        self.assertEqual(expected_damage, 66)
+
+    def test_weapon_disadvantage_decreased_expected_damage(self):
+        self.teros.add_ability(self.spear)
+        self.teros.equip_ability(self.spear)
+
+        self.bandit.add_ability(self.axe)
+        self.bandit.equip_ability(self.axe)
+
+        expected_damage = SquaddieUseAbilityService.calculate_expected_damage(self.teros, self.spear, self.bandit)
+        self.assertEqual(expected_damage, 52)
+
+    def test_bow_initiating_increases_expected_damage(self):
+        self.teros.add_ability(self.bow)
+        self.teros.equip_ability(self.bow)
+
+        self.bandit.add_ability(self.axe)
+        self.bandit.equip_ability(self.axe)
+
+        expected_damage = SquaddieUseAbilityService.calculate_expected_damage(
+            self.teros,
+            self.bow,
+            self.bandit,
+            {
+                "initiating": True
+            }
+        )
+        self.assertEqual(expected_damage, 66)
+
+    # def test_countering_decreases_expected_damage(self):
+
+    # def test_bow_countering_decreases_expected_damage(self):
+
+    # def test_bow_too_close_decreases_expected_damage(self):

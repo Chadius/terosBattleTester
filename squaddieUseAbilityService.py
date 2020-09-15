@@ -48,8 +48,18 @@ class SquaddieUseAbilityService():
         return chance_to_hit
 
     @classmethod
-    def calculate_expected_chance_hit(cls, attacker: Squaddie, ability: Ability, target: Squaddie) -> int:
-        chance_to_hit = SquaddieUseAbilityService.calculate_chance_hit(attacker, ability, target)
+    def calculate_expected_chance_hit(cls, attacker: Squaddie, ability: Ability, target: Squaddie, modifiers={}) -> int:
+        modifiers.update({
+            "hasAdvantage": SquaddieUseAbilityService.has_advantage_due_to_ability(ability,
+                                                                                   target.get_equipped_ability()),
+            "hasDisadvantage": SquaddieUseAbilityService.has_disadvantage_due_to_ability(ability,
+                                                                                         target.get_equipped_ability()),
+        })
+
+        if modifiers.get("initiating", False):
+            modifiers["hasAdvantage"] = SquaddieUseAbilityService.has_advantage_due_to_initating(ability)
+
+        chance_to_hit = SquaddieUseAbilityService.calculate_chance_hit(attacker, ability, target, modifiers)
 
         if chance_to_hit < -5:
             return 0
@@ -100,6 +110,9 @@ class SquaddieUseAbilityService():
 
     @classmethod
     def has_advantage_due_to_ability(cls, attack_ability: Ability, defense_ability: Ability) -> bool:
+        if defense_ability is None:
+            return False
+
         advantage_chart = {
             AbilityType.WEAPON: {
                 AbilityWeaponType.SWORD: AbilityWeaponType.AXE,
@@ -112,6 +125,9 @@ class SquaddieUseAbilityService():
 
     @classmethod
     def has_disadvantage_due_to_ability(cls, attack_ability: Ability, defense_ability: Ability) -> bool:
+        if defense_ability is None:
+            return False
+
         disadvantage_chart = {
             AbilityType.WEAPON: {
                 AbilityWeaponType.SWORD: AbilityWeaponType.SPEAR,
@@ -157,3 +173,11 @@ class SquaddieUseAbilityService():
         if ability.get_type() == AbilityType.WEAPON and ability.get_subtype() == AbilityWeaponType.BOW:
             return True
         return False
+
+    @classmethod
+    def calculate_expected_damage(cls, attacker: Squaddie, ability: Ability, target: Squaddie, modifiers={}) -> int:
+        expected_chance_to_hit = SquaddieUseAbilityService.calculate_expected_chance_hit(attacker, ability, target,
+                                                                                         modifiers)
+
+        damage_upon_hit = SquaddieUseAbilityService.calculate_damage_upon_hit(attacker, ability, target)
+        return expected_chance_to_hit * damage_upon_hit
