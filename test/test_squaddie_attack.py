@@ -387,8 +387,53 @@ class CalculateExpectedDamage(TestCase):
         )
         self.assertEqual(expected_damage, 66)
 
-    # def test_countering_decreases_expected_damage(self):
+    def test_countering_decreases_expected_damage(self):
+        self.teros.add_ability(self.spear)
+        self.teros.equip_ability(self.spear)
 
-    # def test_bow_countering_decreases_expected_damage(self):
+        self.bandit.add_ability(self.spear)
+        self.bandit.equip_ability(self.spear)
 
-    # def test_bow_too_close_decreases_expected_damage(self):
+        expected_damage = SquaddieUseAbilityService.calculate_expected_damage(
+            self.teros,
+            self.bow,
+            self.bandit,
+            {
+                "isCounterAttack": True
+            }
+        )
+        self.assertEqual(expected_damage, 42)
+
+    def test_bow_countering_decreases_expected_damage(self):
+        self.teros.add_ability(self.bow)
+        self.teros.equip_ability(self.bow)
+
+        self.bandit.add_ability(self.axe)
+        self.bandit.equip_ability(self.axe)
+
+        expected_damage = SquaddieUseAbilityService.calculate_expected_damage(
+            self.teros,
+            self.bow,
+            self.bandit,
+            {
+                "isCounterAttack": True
+            }
+        )
+        self.assertEqual(expected_damage, 42)
+
+    def test_bow_too_close_decreases_expected_damage(self):
+        self.teros.add_ability(self.bow)
+        self.teros.equip_ability(self.bow)
+
+        self.bandit.add_ability(self.axe)
+        self.bandit.equip_ability(self.axe)
+
+        expected_damage = SquaddieUseAbilityService.calculate_expected_damage(
+            self.teros,
+            self.bow,
+            self.bandit,
+            {
+                "tooClose": True
+            }
+        )
+        self.assertEqual(expected_damage, 52)

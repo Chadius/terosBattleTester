@@ -60,7 +60,6 @@ class SquaddieUseAbilityService():
             modifiers["hasAdvantage"] = SquaddieUseAbilityService.has_advantage_due_to_initating(ability)
 
         chance_to_hit = SquaddieUseAbilityService.calculate_chance_hit(attacker, ability, target, modifiers)
-
         if chance_to_hit < -5:
             return 0
         if chance_to_hit > 4:
