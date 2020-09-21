@@ -1,5 +1,6 @@
 import unittest
 
+from squaddie import Squaddie
 from zone_map import ZoneMap
 
 
@@ -35,3 +36,31 @@ class MapCanAddSquaddies(unittest.TestCase):
         self.zone_map = ZoneMap("The map")
         self.zone_map.add_zone("A")
         self.zone_map.add_zone("B")
+
+        self.teros = Squaddie()
+        self.teros.set_stats({
+            "name": "T'eros",
+            "maxHP": 5,
+            "aim": 1,
+            "strength": 1,
+            "magic": 2,
+            "dodge": 1,
+            "armor": 1,
+            "deflect": 1,
+            "resist": 1,
+        })
+
+    def test_add_squaddie(self):
+        self.zone_map.add_squaddie(self.teros, "A")
+        squaddies_in_zone = self.zone_map.get_squaddies_in_zone("A")
+        self.assertSetEqual(squaddies_in_zone, {self.teros})
+
+    def test_move_squaddie(self):
+        self.zone_map.add_squaddie(self.teros, "A")
+        self.zone_map.move_squaddie_to_zone(self.teros, "B")
+
+        squaddies_in_start_zone = self.zone_map.get_squaddies_in_zone("A")
+        self.assertSetEqual(squaddies_in_start_zone, set())
+
+        squaddies_in_destination_zone = self.zone_map.get_squaddies_in_zone("B")
+        self.assertSetEqual(squaddies_in_destination_zone, {self.teros})
