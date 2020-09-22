@@ -25,6 +25,7 @@ class ZoneMap(object):
     def __init__(self, name: str):
         self.name = name
         self.zone_by_name = {}
+        self.adjacent_zones = {}
 
     def get_name(self) -> str:
         return self.name
@@ -51,3 +52,24 @@ class ZoneMap(object):
             zone.remove_squaddie(squaddie_to_move)
         destination_zone = self.zone_by_name[destination_zone_name]
         destination_zone.add_squaddie_to_zone(squaddie_to_move)
+
+    def get_zone_by_name(self, zone_name: str) -> Zone:
+        return self.zone_by_name[zone_name]
+
+    def get_adjacent_zones(self, zone_nane_to_search_from: str) -> Set[Zone]:
+        zone = self.get_zone_by_name(zone_nane_to_search_from)
+        return self.adjacent_zones.get(zone, set())
+
+    def link_adjacent_zones(self, zone1_name: str, zone2_name: str) -> None:
+        zone1 = self.get_zone_by_name(zone1_name)
+        zone2 = self.get_zone_by_name(zone2_name)
+        if not (zone2 and zone1):
+            return
+
+        if not zone1 in self.adjacent_zones:
+            self.adjacent_zones[zone1] = set()
+        self.adjacent_zones[zone1].add(zone2)
+
+        if not zone2 in self.adjacent_zones:
+            self.adjacent_zones[zone2] = set()
+        self.adjacent_zones[zone2].add(zone1)

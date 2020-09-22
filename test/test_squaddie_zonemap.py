@@ -37,6 +37,9 @@ class MapCanAddSquaddies(unittest.TestCase):
         self.zone_map.add_zone("A")
         self.zone_map.add_zone("B")
 
+        self.zoneA = self.zone_map.get_zone_by_name("A")
+        self.zoneB = self.zone_map.get_zone_by_name("B")
+
         self.teros = Squaddie()
         self.teros.set_stats({
             "name": "T'eros",
@@ -64,3 +67,23 @@ class MapCanAddSquaddies(unittest.TestCase):
 
         squaddies_in_destination_zone = self.zone_map.get_squaddies_in_zone("B")
         self.assertSetEqual(squaddies_in_destination_zone, {self.teros})
+
+    def test_link_zones(self):
+        self.assertSetEqual(self.zone_map.get_adjacent_zones("A"), set())
+        self.zone_map.link_adjacent_zones("A", "B")
+        self.assertSetEqual(self.zone_map.get_adjacent_zones("A"), {self.zoneB})
+        self.assertSetEqual(self.zone_map.get_adjacent_zones("B"), {self.zoneA})
+
+
+class MapCanDetermineProximity(unittest.TestCase):
+    def setUp(self):
+        self.zone_map = ZoneMap("The map")
+        self.zone_map.add_zone("A")
+        self.zone_map.add_zone("B")
+        self.zone_map.add_zone("C")
+
+        self.zone_map.link_adjacent_zones("A", "B")
+        self.zone_map.link_adjacent_zones("B", "C")
+
+        self.teros = Squaddie()
+        self.bandit = Squaddie()
