@@ -58,6 +58,14 @@ class MapCanAddSquaddies(unittest.TestCase):
         squaddies_in_zone = self.zone_map.get_squaddies_in_zone("A")
         self.assertSetEqual(squaddies_in_zone, {self.teros})
 
+    def test_can_find_zone_squaddie_is_in(self):
+        self.zone_map.add_squaddie(self.teros, "B")
+        teros_zone = self.zone_map.get_zone_squaddie_is_in(self.teros)
+        self.assertEqual(teros_zone, self.zone_map.get_zone_by_name("B"))
+
+        squaddie_in_space = Squaddie()
+        self.assertIsNone(self.zone_map.get_zone_squaddie_is_in(squaddie_in_space))
+
     def test_move_squaddie(self):
         self.zone_map.add_squaddie(self.teros, "A")
         self.zone_map.move_squaddie_to_zone(self.teros, "B")
@@ -87,3 +95,23 @@ class MapCanDetermineProximity(unittest.TestCase):
 
         self.teros = Squaddie()
         self.bandit = Squaddie()
+
+    def test_knows_if_two_squaddies_are_in_melee_range_if_in_the_same_zone(self):
+        self.zone_map.add_squaddie(self.teros, "A")
+        self.assertFalse(self.zone_map.squaddies_are_in_melee(self.teros, self.bandit))
+
+        self.zone_map.add_squaddie(self.bandit, "A")
+        self.assertTrue(self.zone_map.squaddies_are_in_melee(self.teros, self.bandit))
+
+        self.zone_map.move_squaddie_to_zone(self.bandit, "B")
+        self.assertFalse(self.zone_map.squaddies_are_in_melee(self.teros, self.bandit))
+
+    def test_knows_if_two_squaddies_are_in_range_if_in_adjacent_zones(self):
+        self.zone_map.add_squaddie(self.teros, "A")
+        self.assertFalse(self.zone_map.squaddies_are_at_ranged(self.teros, self.bandit))
+
+        self.zone_map.add_squaddie(self.bandit, "A")
+        self.assertFalse(self.zone_map.squaddies_are_at_ranged(self.teros, self.bandit))
+
+        self.zone_map.move_squaddie_to_zone(self.bandit, "B")
+        self.assertTrue(self.zone_map.squaddies_are_at_ranged(self.teros, self.bandit))

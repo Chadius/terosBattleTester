@@ -437,3 +437,35 @@ class CalculateExpectedDamage(TestCase):
             }
         )
         self.assertEqual(expected_damage, 52)
+
+
+class DetermineAttacksAndModifiers(TestCase):
+    def setUp(self) -> None:
+        # create zone map
+        # create zone a b c
+        # create teros
+        # create bandit
+        # create necromancer
+
+        # create abilities
+        pass
+
+    # def test_weapon_attacks_create_counterattacks(self):
+    # New service will take a zone map, squaddies attacking, and attacking ability.
+    #     Will return an object of modifiers.
+    #     pass
+
+    # def test_spell_attacks_do_not_create_counterattacks(self):
+    #     pass
+
+    # def test_unequipped_defenders_do_not_counter(self):
+    #     pass
+
+    # def test_weapon_subtypes_create_advantage_and_disadvantage(self):
+    #     pass
+
+    # def test_bows_create_advantage_and_disadvantage_based_on_initiate_and_counter(self):
+    #     pass
+
+    # def test_bows_take_penalties_for_being_too_close(self):
+    #     pass
