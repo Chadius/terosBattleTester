@@ -1,5 +1,8 @@
+from typing import List, Dict
+
 from ability import AbilityType, Ability, AbilityWeaponType
 from squaddie import Squaddie
+from zone_map import ZoneMap
 
 
 class SquaddieUseAbilityService():
@@ -180,3 +183,20 @@ class SquaddieUseAbilityService():
 
         damage_upon_hit = SquaddieUseAbilityService.calculate_damage_upon_hit(attacker, ability, target)
         return expected_chance_to_hit * damage_upon_hit
+
+    @classmethod
+    def get_modifiers_for_ability_use(cls, zone_map: ZoneMap, attacker: Squaddie, ability: Ability, defender: Squaddie) -> List[Dict[str, str]]:
+        ability_modifiers = []
+
+        round_modifiers = {
+            "initiating": True
+        }
+        ability_modifiers.append(round_modifiers)
+
+        if defender.get_equipped_ability() and defender.get_equipped_ability().can_counter_attack():
+            counter_attack_modifiers = {
+                "isCounterAttack": True
+            }
+            ability_modifiers.append(counter_attack_modifiers)
+
+        return ability_modifiers

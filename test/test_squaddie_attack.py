@@ -4,6 +4,7 @@ from squaddieUseAbilityService import SquaddieUseAbilityService
 
 from ability import Ability, AbilityType, AbilitySpellType, AbilityTarget, AbilityWeaponType
 from squaddie import Squaddie
+from zone_map import ZoneMap
 
 
 class SquaddieFactory:
@@ -93,6 +94,7 @@ class AbilityFactory:
             "durability": 10,
             "canDealCriticalHits": True,
             "criticalHitNumber": 2,
+            "canCounterAttack": True,
             "targets": [AbilityTarget.FOE]
         })
         return spear
@@ -113,6 +115,7 @@ class AbilityFactory:
             "durability": 10,
             "canDealCriticalHits": True,
             "criticalHitNumber": 2,
+            "canCounterAttack": True,
             "targets": [AbilityTarget.FOE]
         })
         return sword
@@ -133,6 +136,7 @@ class AbilityFactory:
             "durability": 10,
             "canDealCriticalHits": True,
             "criticalHitNumber": 2,
+            "canCounterAttack": True,
             "targets": [AbilityTarget.FOE]
         })
         return axe
@@ -441,25 +445,101 @@ class CalculateExpectedDamage(TestCase):
 
 class DetermineAttacksAndModifiers(TestCase):
     def setUp(self) -> None:
-        # create zone map
-        # create zone a b c
-        # create teros
-        # create bandit
-        # create necromancer
+        self.zone_map = ZoneMap("The map")
+        self.zone_map.add_zone("A")
+        self.zone_map.add_zone("B")
+        self.zone_map.add_zone("C")
 
-        # create abilities
-        pass
+        self.zone_map.link_adjacent_zones("A", "B")
+        self.zone_map.link_adjacent_zones("B", "C")
 
-    # def test_weapon_attacks_create_counterattacks(self):
-    # New service will take a zone map, squaddies attacking, and attacking ability.
-    #     Will return an object of modifiers.
-    #     pass
+        self.teros = SquaddieFactory.create_teros()
+        self.bandit = SquaddieFactory.create_bandit()
+        self.necromancer = SquaddieFactory.create_necromancer()
 
-    # def test_spell_attacks_do_not_create_counterattacks(self):
-    #     pass
+        self.blot_spell = AbilityFactory.create_blot_spell()
+        self.spear = AbilityFactory.create_spear()
+        self.sword = AbilityFactory.create_sword()
+        self.axe = AbilityFactory.create_axe()
+        self.bow = AbilityFactory.create_bow()
 
-    # def test_unequipped_defenders_do_not_counter(self):
-    #     pass
+    def test_weapon_attacks_create_counterattacks(self):
+        self.teros.add_ability(self.spear)
+        self.teros.equip_ability(self.spear)
+
+        self.bandit.add_ability(self.spear)
+        self.bandit.equip_ability(self.spear)
+
+        self.zone_map.add_squaddie(self.teros, "A")
+        self.zone_map.add_squaddie(self.bandit, "A")
+
+        attack_modifiers = SquaddieUseAbilityService.get_modifiers_for_ability_use(
+            self.zone_map,
+            self.teros,
+            self.spear,
+            self.bandit
+        )
+
+        self.assertEqual(
+            [
+                {
+                    "initiating": True
+                },
+                {
+                    "isCounterAttack": True
+                },
+            ],
+            attack_modifiers
+        )
+
+    def test_spell_attacks_do_not_create_counterattacks(self):
+        self.teros.add_ability(self.blot_spell)
+        self.teros.equip_ability(self.blot_spell)
+
+        self.bandit.add_ability(self.spear)
+        self.bandit.equip_ability(self.spear)
+
+        self.zone_map.add_squaddie(self.teros, "A")
+        self.zone_map.add_squaddie(self.bandit, "A")
+
+        attack_modifiers = SquaddieUseAbilityService.get_modifiers_for_ability_use(
+            self.zone_map,
+            self.bandit,
+            self.spear,
+            self.teros
+        )
+
+        self.assertEqual(
+            [
+                {
+                    "initiating": True
+                }
+            ],
+            attack_modifiers
+        )
+
+    def test_unequipped_defenders_do_not_counter(self):
+        self.teros.add_ability(self.spear)
+        self.teros.equip_ability(self.spear)
+
+        self.zone_map.add_squaddie(self.teros, "A")
+        self.zone_map.add_squaddie(self.bandit, "A")
+
+        attack_modifiers = SquaddieUseAbilityService.get_modifiers_for_ability_use(
+            self.zone_map,
+            self.teros,
+            self.spear,
+            self.bandit
+        )
+
+        self.assertEqual(
+            [
+                {
+                    "initiating": True
+                },
+            ],
+            attack_modifiers
+        )
 
     # def test_weapon_subtypes_create_advantage_and_disadvantage(self):
     #     pass
