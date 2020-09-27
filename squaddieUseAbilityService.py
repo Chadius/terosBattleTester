@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Union
 
 from ability import AbilityType, Ability, AbilityWeaponType
 from squaddie import Squaddie
@@ -185,18 +185,36 @@ class SquaddieUseAbilityService():
         return expected_chance_to_hit * damage_upon_hit
 
     @classmethod
-    def get_modifiers_for_ability_use(cls, zone_map: ZoneMap, attacker: Squaddie, ability: Ability, defender: Squaddie) -> List[Dict[str, str]]:
+    def get_modifiers_for_ability_use(cls, zone_map: ZoneMap, attacker: Squaddie, ability: Ability,
+                                      defender: Squaddie) -> List[Dict[str, Union[str, bool]]]:
         ability_modifiers = []
+        squaddies_are_in_same_zone = zone_map.squaddies_are_in_melee(attacker, defender)
 
         round_modifiers = {
             "initiating": True
         }
+        if cls.has_advantage_due_to_initating(ability):
+            round_modifiers["hasAdvantage"] = True
+        if cls.has_advantage_due_to_ability(ability, defender.get_equipped_ability()):
+            round_modifiers["hasAdvantage"] = True
+        if cls.has_disadvantage_due_to_ability(ability, defender.get_equipped_ability()):
+            round_modifiers["hasDisadvantage"] = True
+        if cls.has_point_blank_penalty(ability) and squaddies_are_in_same_zone:
+            round_modifiers["tooClose"] = True
         ability_modifiers.append(round_modifiers)
 
         if defender.get_equipped_ability() and defender.get_equipped_ability().can_counter_attack():
             counter_attack_modifiers = {
                 "isCounterAttack": True
             }
+            if cls.has_disadvantage_due_to_countering(defender.get_equipped_ability()):
+                counter_attack_modifiers["hasDisadvantage"] = True
+            if cls.has_advantage_due_to_ability(defender.get_equipped_ability(), ability):
+                counter_attack_modifiers["hasAdvantage"] = True
+            if cls.has_disadvantage_due_to_ability(defender.get_equipped_ability(), ability):
+                counter_attack_modifiers["hasDisadvantage"] = True
+            if cls.has_point_blank_penalty(defender.get_equipped_ability()) and squaddies_are_in_same_zone:
+                counter_attack_modifiers["tooClose"] = True
             ability_modifiers.append(counter_attack_modifiers)
 
         return ability_modifiers

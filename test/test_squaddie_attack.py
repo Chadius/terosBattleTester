@@ -157,6 +157,7 @@ class AbilityFactory:
             "durability": 10,
             "canDealCriticalHits": True,
             "criticalHitNumber": 2,
+            "canCounterAttack": True,
             "targets": [AbilityTarget.FOE]
         })
         return bow
@@ -541,11 +542,103 @@ class DetermineAttacksAndModifiers(TestCase):
             attack_modifiers
         )
 
-    # def test_weapon_subtypes_create_advantage_and_disadvantage(self):
-    #     pass
+    def test_weapon_subtypes_create_advantage_and_disadvantage(self):
+        self.teros.add_ability(self.spear)
+        self.bandit.equip_ability(self.axe)
 
-    # def test_bows_create_advantage_and_disadvantage_based_on_initiate_and_counter(self):
-    #     pass
+        self.zone_map.add_squaddie(self.teros, "A")
+        self.zone_map.add_squaddie(self.bandit, "A")
 
-    # def test_bows_take_penalties_for_being_too_close(self):
-    #     pass
+        attack_modifiers = SquaddieUseAbilityService.get_modifiers_for_ability_use(
+            self.zone_map,
+            self.teros,
+            self.spear,
+            self.bandit
+        )
+
+        self.assertEqual(2, len(attack_modifiers))
+        self.assertDictEqual(
+            {
+                "initiating": True,
+                "hasDisadvantage": True,
+            },
+            attack_modifiers[0]
+        )
+
+        self.assertDictEqual(
+            {
+                "isCounterAttack": True,
+                "hasAdvantage": True,
+            },
+            attack_modifiers[1]
+        )
+
+    def test_bows_create_advantage_and_disadvantage_based_on_initiate_and_counter(self):
+        self.teros.add_ability(self.bow)
+        self.teros.equip_ability(self.bow)
+
+        self.bandit.add_ability(self.bow)
+        self.bandit.equip_ability(self.bow)
+
+        self.zone_map.add_squaddie(self.teros, "A")
+        self.zone_map.add_squaddie(self.bandit, "B")
+
+        attack_modifiers = SquaddieUseAbilityService.get_modifiers_for_ability_use(
+            self.zone_map,
+            self.bandit,
+            self.bow,
+            self.teros
+        )
+
+        self.assertEqual(2, len(attack_modifiers))
+        self.assertDictEqual(
+            {
+                "initiating": True,
+                "hasAdvantage": True,
+            },
+            attack_modifiers[0]
+        )
+
+        self.assertDictEqual(
+            {
+                "isCounterAttack": True,
+                "hasDisadvantage": True,
+            },
+            attack_modifiers[1]
+        )
+
+    def test_bows_take_penalties_for_being_too_close(self):
+        self.teros.add_ability(self.bow)
+        self.teros.equip_ability(self.bow)
+
+        self.bandit.add_ability(self.bow)
+        self.bandit.equip_ability(self.bow)
+
+        self.zone_map.add_squaddie(self.teros, "A")
+        self.zone_map.add_squaddie(self.bandit, "A")
+
+        attack_modifiers = SquaddieUseAbilityService.get_modifiers_for_ability_use(
+            self.zone_map,
+            self.bandit,
+            self.bow,
+            self.teros
+        )
+
+        self.assertEqual(2, len(attack_modifiers))
+        self.assertDictEqual(
+            {
+                "initiating": True,
+                "hasAdvantage": True,
+                "tooClose": True,
+            },
+            attack_modifiers[0]
+        )
+
+        self.assertDictEqual(
+            {
+                "isCounterAttack": True,
+                "hasDisadvantage": True,
+                "tooClose": True,
+            },
+            attack_modifiers[1]
+        )
