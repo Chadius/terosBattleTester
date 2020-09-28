@@ -82,6 +82,7 @@ class MapCanAddSquaddies(unittest.TestCase):
         self.assertSetEqual(self.zone_map.get_adjacent_zones("A"), {self.zoneB})
         self.assertSetEqual(self.zone_map.get_adjacent_zones("B"), {self.zoneA})
 
+    # TODO: Add way to get name of adjacent zones
 
 class MapCanDetermineProximity(unittest.TestCase):
     def setUp(self):
